@@ -38,7 +38,7 @@ module "security-group" {
   eks-node-sg-name = var.EKS-NODE-SG-NAME
   postgre-db-sg-name = var.POSTGRE-DB-SG-NAME
   DOCUMENT-DB-SG-NAME   = var.DOCUMENT-DB-SG-NAME
-  INTERNAL-ALB-SG-NAME  = var.INTERNAL-ALB-SG-NAME
+
 
   depends_on = [module.vpc]
 }

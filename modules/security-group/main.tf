@@ -173,7 +173,7 @@ resource "aws_security_group" "document_db_sg" {
   description = "Security group for DocumentDB"
   vpc_id      = data.aws_vpc.vpc.id
 
-  ingress {s
+  ingress {
     description     = "Allow DocumentDB access from EKS Node Group"
     from_port       = 27017
     to_port         = 27017
