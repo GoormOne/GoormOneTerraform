@@ -10,6 +10,10 @@ variable "PRIVATE-CIDR1" {}
 variable "PRIVATE-SUBNET1" {}
 variable "PRIVATE-CIDR2" {}
 variable "PRIVATE-SUBNET2" {}
+variable "PRIVATE-CIDR3" {}
+variable "PRIVATE-SUBNET3" {}
+variable "PRIVATE-CIDR4" {}
+variable "PRIVATE-SUBNET4" {}
 variable "EIP-NAME1" {}
 variable "EIP-NAME2" {}
 variable "NGW-NAME1" {}
@@ -18,13 +22,18 @@ variable "PUBLIC-RT-NAME1" {}
 variable "PUBLIC-RT-NAME2" {}
 variable "PRIVATE-RT-NAME1" {}
 variable "PRIVATE-RT-NAME2" {}
+variable "PRIVATE-RT-NAME3" {}
+variable "PRIVATE-RT-NAME4" {}
+
 
 # SECURITY GROUP
-variable "WEB-ALB-SG-NAME" {}
-variable "WAS-ALB-SG-NAME" {}
-variable "WAS-SG-NAME" {}
-variable "WEB-SG-NAME" {}
-variable "DB-SG-NAME" {}
+variable "ALB-SG-NAME" {}
+
+variable "REDIS-EC2-SG-NAME" {}
+variable "EKS-CLUSTER-SG-NAME" {}
+variable "EKS-NODE-SG-NAME" {}
+variable "POSTGRE-DB-SG-NAME" {}
+variable "DOCUMENT-DB-SG-NAME" {}
 
 # RDS
 variable "SG-NAME" {}

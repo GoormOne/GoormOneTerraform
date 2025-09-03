@@ -9,6 +9,10 @@ variable "private-cidr1" {}
 variable "private-subnet1" {}
 variable "private-cidr2" {}
 variable "private-subnet2" {}
+variable "private-cidr3" {}
+variable "private-subnet3" {}
+variable "private-cidr4" {}
+variable "private-subnet4" {}
 variable "eip-name1" {}
 variable "eip-name2" {}
 
@@ -18,3 +22,5 @@ variable "public-rt-name1" {}
 variable "public-rt-name2" {}
 variable "private-rt-name1" {}
 variable "private-rt-name2" {}
+variable "private-rt-name3" {}
+variable "private-rt-name4" {}

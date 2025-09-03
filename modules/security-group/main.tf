@@ -1,167 +1,195 @@
-resource "aws_security_group" "web-alb-sg" {
-  vpc_id      = data.aws_vpc.vpc.id
-  description = "Allow HTTP and HTTPS for World"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+# 현재 VPC 정보를 가져오기 위한 data 소스
+data "aws_vpc" "vpc" {
+  filter {
+    name   = "tag:Name"
+    values = [var.vpc-name]
   }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  tags = {
-    Name = var.web-alb-sg-name
-  }
-
-  depends_on = [ data.aws_vpc.vpc ]
 }
 
 
-resource "aws_security_group" "web-tier-sg" {
+# =================================================================
+# Internal ALB Security Group
+# =================================================================
+resource "aws_security_group" "internal_alb_sg" {
+  name        = var.alb-sg-name
+  description = "Security group for Internal ALB"
   vpc_id      = data.aws_vpc.vpc.id
-  description = "Allow HTTP and HTTPS for ALB Only"
+
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    security_groups = [aws_security_group.web-alb-sg.id]
+    description     = "Allow HTTP from VPC Endpoint"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [data.aws_vpc.vpc.cidr_block]
   }
 
- 
-
-  ingress {
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
+  tags = {
+    Name = var.alb-sg-name
+  }
+}
+
+
+
+# =================================================================
+# EKS Cluster Security Group
+# =================================================================
+resource "aws_security_group" "eks_cluster_sg" {
+  name        = var.eks-cluster-sg-name
+  description = "Security group for EKS Cluster"
+  vpc_id      = data.aws_vpc.vpc.id
+
+  ingress {//아직 어떤 포트에 줘야할지모름
+    description     = "아직 어떤 포트에 줘야할지 모름 "
     from_port       = 443
     to_port         = 443
     protocol        = "tcp"
-    security_groups = [aws_security_group.web-alb-sg.id]
+    security_groups = [aws_security_group.eks_node_sg.id]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  tags = {
-    Name = var.web-sg-name
-  }
-
-  depends_on = [ aws_security_group.web-alb-sg ]
-}
-
-resource "aws_security_group" "was-alb-sg" {
-  vpc_id      = data.aws_vpc.vpc.id
-  description = "Allow HTTP and HTTPS for World"
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-     security_groups = [aws_security_group.web-tier-sg.id]
   }
-
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+  
 
   tags = {
-    Name = var.was-alb-sg-name
+    Name = var.eks-cluster-sg-name
   }
-
-  depends_on = [ aws_security_group.web-tier-sg ]
 }
 
-
-resource "aws_security_group" "was-tier-sg" {
+# =================================================================
+# EKS Node Group Security Group
+# =================================================================
+resource "aws_security_group" "eks_node_sg" {
+  name        = var.eks-node-sg-name
+  description = "Security group for EKS Node Group"
   vpc_id      = data.aws_vpc.vpc.id
-  description = "Allow HTTP and HTTPS for ALB Only"
 
- 
+  ingress { // 아직 어떤 포트에 줘야할지 모름
+    description     = "Allow cluster to connect to nodes (kubelet)"
+    from_port       = 1025
+    to_port         = 65535
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_cluster_sg.id]
+  }
+  
 
   ingress {
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
+    description = "Allow all traffic between nodes"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port       = 8080
-    to_port         = 8080
-    protocol        = "tcp"
-    security_groups = [aws_security_group.was-alb-sg.id]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
   tags = {
-    Name = var.was-sg-name
+    Name = var.eks-node-sg-name
   }
-
-  depends_on = [ aws_security_group.was-alb-sg ]
 }
 
 
-
-# Creating Security Group for RDS Instances Tier With  only access to App-Tier ALB
-resource "aws_security_group" "database-sg" {
+# =================================================================
+# Redis Security Group
+# =================================================================
+resource "aws_security_group" "redis_sg" {
+  name        = var.redis-ec2-sg-name
+  description = "Security group for Redis EC2 instance"
   vpc_id      = data.aws_vpc.vpc.id
-  description = "Protocol Type MySQL/Aurora"
 
   ingress {
-    from_port       = 3306
-    to_port         = 3306
+    description     = "Allow Redis access from EKS Node Group"
+    from_port       = 6379 # Redis 기본 포트
+    to_port         = 6379
     protocol        = "tcp"
-    security_groups = [aws_security_group.was-tier-sg.id]
+    security_groups = [aws_security_group.eks_node_sg.id]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
-    Name = var.db-sg-name
+    Name = var.redis-ec2-sg-name
+  }
+}
+
+# =================================================================
+# PostgreSQL DB Security Group
+# =================================================================
+resource "aws_security_group" "postgre_db_sg" {
+  name        = var.postgre-db-sg-name
+  description = "Security group for PostgreSQL DB"
+  vpc_id      = data.aws_vpc.vpc.id
+
+  ingress {
+    description     = "Allow PostgreSQL access from EKS Node Group"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_node_sg.id]
   }
 
-  depends_on = [ aws_security_group.was-tier-sg ]
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.postgre-db-sg-name
+  }
+}
+
+# =================================================================
+# DocumentDB Security Group
+# =================================================================
+resource "aws_security_group" "document_db_sg" {
+  name        = var.document-db-sg-name
+  description = "Security group for DocumentDB"
+  vpc_id      = data.aws_vpc.vpc.id
+
+  ingress {s
+    description     = "Allow DocumentDB access from EKS Node Group"
+    from_port       = 27017
+    to_port         = 27017
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_node_sg.id]
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.document-db-sg-name
+  }
 }

@@ -11,6 +11,10 @@ module "vpc" {
   private-subnet1 = var.PRIVATE-SUBNET1
   private-cidr2   = var.PRIVATE-CIDR2
   private-subnet2 = var.PRIVATE-SUBNET2
+  private-cidr3   = var.PRIVATE-CIDR3
+  private-subnet3 = var.PRIVATE-SUBNET3
+  private-cidr4   = var.PRIVATE-CIDR4
+  private-subnet4 = var.PRIVATE-SUBNET4
   eip-name1       = var.EIP-NAME1
   eip-name2       = var.EIP-NAME2
 
@@ -20,17 +24,21 @@ module "vpc" {
   public-rt-name2  = var.PUBLIC-RT-NAME2
   private-rt-name1 = var.PRIVATE-RT-NAME1
   private-rt-name2 = var.PRIVATE-RT-NAME2
+  private-rt-name3 = var.PRIVATE-RT-NAME3
+  private-rt-name4 = var.PRIVATE-RT-NAME4
 }
 
 module "security-group" {
   source = "../modules/security-group"
 
   vpc-name    = var.VPC-NAME
-  web-alb-sg-name = var.WEB-ALB-SG-NAME
-  was-alb-sg-name = var.WAS-ALB-SG-NAME
-  was-sg-name = var.WAS-SG-NAME
-  web-sg-name = var.WEB-SG-NAME
-  db-sg-name  = var.DB-SG-NAME
+  alb-sg-name = var.ALB-SG-NAME
+  redis-ec2-sg-name = var.REDIS-EC2-SG-NAME
+  eks-cluster-sg-name = var.EKS-CLUSTER-SG-NAME
+  eks-node-sg-name = var.EKS-NODE-SG-NAME
+  postgre-db-sg-name = var.POSTGRE-DB-SG-NAME
+  DOCUMENT-DB-SG-NAME   = var.DOCUMENT-DB-SG-NAME
+  INTERNAL-ALB-SG-NAME  = var.INTERNAL-ALB-SG-NAME
 
   depends_on = [module.vpc]
 }

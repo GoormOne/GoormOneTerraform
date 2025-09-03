@@ -1,37 +1,49 @@
 # VPC
-VPC-NAME         = "3Tier-VPC"
-VPC-CIDR         = "10.10.0.0/16"
-IGW-NAME         = "Interet-Gateway"
-PUBLIC-CIDR1     = "10.10.0.0/24"
+VPC-NAME         = "Groom-VPC"
+VPC-CIDR         = "192.168.0.0/16"
+IGW-NAME         = "Groom-Interet-Gateway"
+PUBLIC-CIDR1     = "192.168.1.0/24"
 PUBLIC-SUBNET1   = "Public-Subnet1"
-PUBLIC-CIDR2     = "10.10.1.0/24"
+PUBLIC-CIDR2     = "192.168.2.0/24"
 PUBLIC-SUBNET2   = "Public-Subnet2"
-PRIVATE-CIDR1    = "10.10.2.0/23"
+PRIVATE-CIDR1    = "192.168.3.0/24"
 PRIVATE-SUBNET1  = "Private-Subnet1"
-PRIVATE-CIDR2    = "10.10.4.0/23"
+PRIVATE-CIDR2    = "192.168.4.0/24"
 PRIVATE-SUBNET2  = "Private-Subnet2"
+PRIVATE-CIDR3    = "192.168.5.0/24"
+PRIVATE-SUBNET3  = "Private-Subnet3"
+PRIVATE-CIDR4    = "192.168.6.0/24"
+PRIVATE-SUBNET4  = "Private-Subnet4"
 EIP-NAME1        = "Elastic-IP1"
 EIP-NAME2        = "Elastic-IP2"
-NGW-NAME1        = "3Tier-NAT1"
-NGW-NAME2        = "3Tier-NAT2"
-PUBLIC-RT-NAME1  = "3Tier-Public-Route-table1"
-PUBLIC-RT-NAME2  = "3Tier-Public-Route-table2"
-PRIVATE-RT-NAME1 = "3Tier-Private-Route-table1"
-PRIVATE-RT-NAME2 = "3Tier-Private-Route-table2"
+NGW-NAME1        = "Groom-NAT1"
+NGW-NAME2        = "Groom-NAT2"
+PUBLIC-RT-NAME1  = "Groom-Public-Route-table1"
+PUBLIC-RT-NAME2  = "Groom-Public-Route-table2"
+PRIVATE-RT-NAME1 = "Groom-Private-Route-table1"
+PRIVATE-RT-NAME2 = "Groom-Private-Route-table2"
+PRIVATE-RT-NAME3 = "Groom-Private-Route-table3"
+PRIVATE-RT-NAME4 = "Groom-Private-Route-table4"
 
 # SECURITY GROUP
-WEB-ALB-SG-NAME = "client-web-alb-sg"
-WAS-ALB-SG-NAME = "client-was-alb-sg"
-WEB-SG-NAME = "client-web-sg"
-WAS-SG-NAME ="client-was-sg"
-DB-SG-NAME  = "client-db-sg"
+ALB-SG-NAME = "alb-sg"
+
+
+REDIS-EC2-SG-NAME = "redis-ec2-sg"//나중에 생기면 적용
+
+EKS-CLUSTER-SG-NAME = "eks-cluster-sg"//나중에 eks 생기면 적용
+EKS-NODE-SG-NAME = "eks-node-sg"
+
+POSTGRE-DB-SG-NAME  = "postgre-db-sg"
+DOCUMENT-DB-SG-NAME   = "my-document-db-sg"
+INTERNAL-ALB-SG-NAME  = "my-internal-alb-sg"
 
 # RDS
-SG-NAME      = "client-rds-sg"
+SG-NAME      = "rds-sg"
 RDS-USERNAME = "admin"
 RDS-PWD      = "12345678"
 DB-NAME      = "mydb"
-RDS-NAME     = "client-RDS"
+RDS-NAME     = "RDS"
 # RDS-DNS     = "aws"
 
 # ALB
@@ -46,11 +58,11 @@ IAM-POLICY            = "cli-iam-policy-for-ec2-SSM_"
 INSTANCE-PROFILE-NAME = "cli-iam-instance-profile-for-ec2-SSM_"
 
 # AUTOSCALING
-AMI-NAME             = "client-New-AMI"
-LAUNCH-TEMPLATE-NAME = "client-Web-template"
-WAS-LAUNCH-TEMPLATE-NAME = "client-was-template"
-WAS-ASG-NAME             = "client-was-Tier-ASG"
-ASG-NAME             = "client-Tier-ASG"
+AMI-NAME             = " New-AMI"
+LAUNCH-TEMPLATE-NAME = " Web-template"
+WAS-LAUNCH-TEMPLATE-NAME = "was-template"
+WAS-ASG-NAME             = "was-Tier-ASG"
+ASG-NAME             = "Tier-ASG"
 
 
 # CLOUDFRONT

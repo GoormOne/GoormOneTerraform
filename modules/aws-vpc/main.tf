@@ -30,7 +30,7 @@ resource "aws_internet_gateway" "igw" {
 resource "aws_subnet" "public-subnet1" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = var.public-cidr1
-  availability_zone       = "us-west-2a"
+  availability_zone       = "ap-northeast-2a"
   map_public_ip_on_launch = true
 
   tags = {
@@ -44,7 +44,7 @@ resource "aws_subnet" "public-subnet1" {
 resource "aws_subnet" "public-subnet2" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = var.public-cidr2
-  availability_zone       = "us-west-2b"
+  availability_zone       = "ap-northeast-2b"
   map_public_ip_on_launch = true
 
   tags = {
@@ -58,7 +58,7 @@ resource "aws_subnet" "public-subnet2" {
 resource "aws_subnet" "private-subnet1" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = var.private-cidr1
-  availability_zone       = "us-west-2a"
+  availability_zone       = "ap-northeast-2a"
   map_public_ip_on_launch = false
 
   tags = {
@@ -72,7 +72,7 @@ resource "aws_subnet" "private-subnet1" {
 resource "aws_subnet" "private-subnet2" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = var.private-cidr2
-  availability_zone       = "us-west-2b"
+  availability_zone       = "ap-northeast-2b"
   map_public_ip_on_launch = false
 
   tags = {
@@ -80,6 +80,32 @@ resource "aws_subnet" "private-subnet2" {
   }
 
   depends_on = [ aws_subnet.private-subnet1 ]
+}
+
+resource "aws_subnet" "private-subnet3" {
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = var.private-cidr3
+  availability_zone       = "ap-northeast-2a"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = var.private-subnet3
+  }
+
+  depends_on = [ aws_subnet.private-subnet2 ]
+}
+
+resource "aws_subnet" "private-subnet4" {
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = var.private-cidr4
+  availability_zone       = "ap-northeast-2b"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = var.private-subnet4
+  }
+
+  depends_on = [ aws_subnet.private-subnet3 ]
 }
 
 # Creating Elastic IP for NAT Gateway 1
@@ -219,4 +245,48 @@ resource "aws_route_table_association" "private-rt-association2" {
   route_table_id = aws_route_table.private-rt2.id
 
   depends_on = [ aws_route_table.private-rt2 ]
+}
+
+resource "aws_route_table" "private-rt3" {
+  vpc_id = aws_vpc.vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.ngw1.id
+  }
+
+  tags = {
+    Name = var.private-rt-name3
+  }
+
+  depends_on = [ aws_route_table_association.private-rt-association2 ]
+}
+
+
+resource "aws_route_table_association" "private-rt-association3" {
+  subnet_id      = aws_subnet.private-subnet3.id
+  route_table_id = aws_route_table.private-rt3.id
+
+  depends_on = [ aws_route_table.private-rt3 ]
+}
+
+resource "aws_route_table" "private-rt4" {
+  vpc_id = aws_vpc.vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.ngw2.id
+  }
+
+  tags = {
+    Name = var.private-rt-name4
+  }
+
+  depends_on = [ aws_route_table_association.private-rt-association3 ]
+}
+
+
+resource "aws_route_table_association" "private-rt-association4" {
+  subnet_id      = aws_subnet.private-subnet4.id
+  route_table_id = aws_route_table.private-rt4.id
+
+  depends_on = [ aws_route_table.private-rt4 ]
 }
