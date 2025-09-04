@@ -12,9 +12,9 @@ data "aws_subnet" "private-subnet4" {
   }
 }
 
-data "aws_security_group" "postgre-db-sg" {
+data "aws_security_group" "document-db-sg" {
   filter {
     name   = "tag:Name"
-    values = [var.postgre-db-sg-name]
+    values = [var.document-db-sg-name]
   }
 }

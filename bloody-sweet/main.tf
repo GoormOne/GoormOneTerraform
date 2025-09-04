@@ -37,7 +37,7 @@ module "security-group" {
   eks-cluster-sg-name = var.EKS-CLUSTER-SG-NAME
   eks-node-sg-name = var.EKS-NODE-SG-NAME
   postgre-db-sg-name = var.POSTGRE-DB-SG-NAME
-  DOCUMENT-DB-SG-NAME   = var.DOCUMENT-DB-SG-NAME
+  document-db-sg-name  = var.DOCUMENT-DB-SG-NAME
 
 
   depends_on = [module.vpc]
@@ -46,71 +46,84 @@ module "security-group" {
 module "rds" {
   source = "../modules/aws-rds"
 
-  sg-name              = var.SG-NAME
-  private-subnet-name1 = var.PRIVATE-SUBNET1
-  private-subnet-name2 = var.PRIVATE-SUBNET2
-  db-sg-name           = var.DB-SG-NAME
-  rds-username         = var.RDS-USERNAME
-  rds-pwd              = var.RDS-PWD
-  db-name              = var.DB-NAME
-  rds-name             = var.RDS-NAME
+  postgre-db-sg-name           = var.POSTGRE-DB-SG-NAME
+  private-subnet-name3 = var.PRIVATE-SUBNET3
+  private-subnet-name4 = var.PRIVATE-SUBNET4
+  postgre-db-snapshot-identifier = var.POSTGRE-DB-SANPSHOT-IDENTIFIER
+  postgre-db-name = var.DOCUMENT-DB-NAME
+
 
   depends_on = [module.security-group]
 }
 
-module "alb" {
-  source = "../modules/alb-tg"
+module "documentdb" {
+  source = "../modules/aws-documentdb"
 
-  public-subnet-name1 = var.PUBLIC-SUBNET1
-  public-subnet-name2 = var.PUBLIC-SUBNET2
-  private-subnet-name1 = var.PRIVATE-SUBNET1
-  private-subnet-name2 = var.PRIVATE-SUBNET2
-  web-alb-sg-name     = var.WEB-ALB-SG-NAME
-  was-alb-sg-name     = var.WAS-ALB-SG-NAME
-  web-alb-name            = var.WEB-ALB-NAME
-  was-alb-name            = var.WAS-ALB-NAME
-  was-tg-name         = var.WAS-TG-NAME
-  tg-name             = var.TG-NAME
-  vpc-name            = var.VPC-NAME
-  vpc-id              = module.vpc.vpc_id
+  private-subnet-name3 = var.PRIVATE-SUBNET3
+  private-subnet-name4 = var.PRIVATE-SUBNET4
+  document-db-sg-name  = var.DOCUMENT-DB-SG-NAME
+  document-db-username = var.DOCUMENT-DB-USERNAME
+  document-db-pwd      = var.DOCUMENT-DB-PWD
+  document-db-name     = var.DOCUMENT-DB-NAME
 
-  depends_on = [module.rds]//나중에 module.rds 로 바꾸기 
+  depends_on = [module.security-group]
 }
+#
+# module "alb" {
+#   source = "../modules/alb-tg"
+#
+#   public-subnet-name1 = var.PUBLIC-SUBNET1
+#   public-subnet-name2 = var.PUBLIC-SUBNET2
+#   private-subnet-name1 = var.PRIVATE-SUBNET1
+#   private-subnet-name2 = var.PRIVATE-SUBNET2
+#   web-alb-sg-name     = var.WEB-ALB-SG-NAME
+#   was-alb-sg-name     = var.WAS-ALB-SG-NAME
+#   web-alb-name            = var.WEB-ALB-NAME
+#   was-alb-name            = var.WAS-ALB-NAME
+#   was-tg-name         = var.WAS-TG-NAME
+#   tg-name             = var.TG-NAME
+#   vpc-name            = var.VPC-NAME
+#   vpc-id              = module.vpc.vpc_id
+#
+#   depends_on = [module.rds]//나중에 module.rds 로 바꾸기
+# }
+#
+# module "iam" {
+#   source = "../modules/aws-iam"
+#
+#   iam-role              = var.IAM-ROLE
+#   iam-policy            = var.IAM-POLICY
+#   instance-profile-name = var.INSTANCE-PROFILE-NAME
+#
+#   depends_on = [module.alb]
+# }
 
-module "iam" {
-  source = "../modules/aws-iam"
 
-  iam-role              = var.IAM-ROLE
-  iam-policy            = var.IAM-POLICY
-  instance-profile-name = var.INSTANCE-PROFILE-NAME
-
-  depends_on = [module.alb]
-}
-
-module "autoscaling" {
-  source = "../modules/aws-autoscaling"
-
-  ami_name              = var.AMI-NAME
-  launch-template-name  = var.LAUNCH-TEMPLATE-NAME
-  was-launch-template-name  = var.WAS-LAUNCH-TEMPLATE-NAME
-  instance-profile-name = var.INSTANCE-PROFILE-NAME
-  web-sg-name           = var.WEB-SG-NAME
-  was-sg-name           = var.WAS-SG-NAME
-  was-tg-name           = var.WAS-TG-NAME
-  tg-name               = var.TG-NAME
-  iam-role              = var.IAM-ROLE
-  public-subnet-name1   = var.PUBLIC-SUBNET1
-  public-subnet-name2   = var.PUBLIC-SUBNET2
-  private-subnet-name1 = var.PRIVATE-SUBNET1
-  private-subnet-name2 = var.PRIVATE-SUBNET2
-  asg-name              = var.ASG-NAME
-  was-asg-name              = var.WAS-ASG-NAME
-  # rds-dns                =    var.RDS-NAME
-  web-alb-dns          =     module.alb.web_alb_dns
-  was-alb-dns          =      module.alb.was_alb_dns
-  rds-dns =                  module.rds.rds_dns
-  depends_on = [module.iam]
-}
+#
+# module "autoscaling" {
+#   source = "../modules/aws-autoscaling"
+#
+#   ami_name              = var.AMI-NAME
+#   launch-template-name  = var.LAUNCH-TEMPLATE-NAME
+#   was-launch-template-name  = var.WAS-LAUNCH-TEMPLATE-NAME
+#   instance-profile-name = var.INSTANCE-PROFILE-NAME
+#   web-sg-name           = var.WEB-SG-NAME
+#   was-sg-name           = var.WAS-SG-NAME
+#   was-tg-name           = var.WAS-TG-NAME
+#   tg-name               = var.TG-NAME
+#   iam-role              = var.IAM-ROLE
+#   public-subnet-name1   = var.PUBLIC-SUBNET1
+#   public-subnet-name2   = var.PUBLIC-SUBNET2
+#   private-subnet-name1 = var.PRIVATE-SUBNET1
+#   private-subnet-name2 = var.PRIVATE-SUBNET2
+#   asg-name              = var.ASG-NAME
+#   was-asg-name              = var.WAS-ASG-NAME
+#   # rds-dns                =    var.RDS-NAME
+#   web-alb-dns          =     module.alb.web_alb_dns
+#   was-alb-dns          =      module.alb.was_alb_dns
+#   rds-dns =                  module.rds.rds_dns
+#   depends_on = [module.iam]
+# }
 
 # module "route53" {
 #   source = "../modules/aws-waf-cdn-acm-route53"

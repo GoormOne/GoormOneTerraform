@@ -36,11 +36,15 @@ variable "POSTGRE-DB-SG-NAME" {}
 variable "DOCUMENT-DB-SG-NAME" {}
 
 # RDS
-variable "SG-NAME" {}
-variable "RDS-USERNAME" {}
-variable "RDS-PWD" {}
-variable "DB-NAME" {}
-variable "RDS-NAME" {}
+variable "POSTGRE-DB-SANPSHOT-IDENTIFIER" {}
+variable "POSTGRE-DB-NAME" {}
+
+
+# DOCUMENT DB
+variable "DOCUMENT-DB-USERNAME" {}
+variable "DOCUMENT-DB-PWD" {}
+variable "DOCUMENT-DB-NAME" {}
+
 
 
 

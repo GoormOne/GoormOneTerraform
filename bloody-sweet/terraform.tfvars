@@ -27,24 +27,29 @@ PRIVATE-RT-NAME4 = "Groom-Private-Route-table4"
 
 # SECURITY GROUP
 ALB-SG-NAME = "alb-sg"
-
-
 REDIS-EC2-SG-NAME = "redis-ec2-sg"//나중에 생기면 적용
-
 EKS-CLUSTER-SG-NAME = "eks-cluster-sg"//나중에 eks 생기면 적용
 EKS-NODE-SG-NAME = "eks-node-sg"
-
 POSTGRE-DB-SG-NAME  = "postgre-db-sg"
-DOCUMENT-DB-SG-NAME   = "my-document-db-sg"
-INTERNAL-ALB-SG-NAME  = "my-internal-alb-sg"
+DOCUMENT-DB-SG-NAME   = "document-db-sg"
 
-# RDS
-SG-NAME      = "rds-sg"
-RDS-USERNAME = "admin"
-RDS-PWD      = "12345678"
-DB-NAME      = "mydb"
-RDS-NAME     = "RDS"
-# RDS-DNS     = "aws"
+
+# POSTGRE
+POSTGRE-DB-SANPSHOT-IDENTIFIER = "arn:aws:rds:ap-northeast-2:490913547024:snapshot:db-groom"
+POSTGRE-DB-NAME = "Groom-Postgre-db"
+
+
+
+# DOCUMENTDB
+DOCUMENT-DB-USERNAME = "ksm3255"
+DOCUMENT-DB-PWD      = "!4786buch"
+DOCUMENT-DB-NAME      = "GroomDocument DB"
+
+
+
+
+
+
 
 # ALB
 TG-NAME  = "Web-TG"

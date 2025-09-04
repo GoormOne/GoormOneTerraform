@@ -1,11 +1,3 @@
-# 현재 VPC 정보를 가져오기 위한 data 소스
-data "aws_vpc" "vpc" {
-  filter {
-    name   = "tag:Name"
-    values = [var.vpc-name]
-  }
-}
-
 
 # =================================================================
 # Internal ALB Security Group
@@ -20,7 +12,7 @@ resource "aws_security_group" "internal_alb_sg" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = [data.aws_vpc.vpc.cidr_block]
+    cidr_blocks = [data.aws_vpc.vpc.cidr_block]
   }
 
   egress {
@@ -46,13 +38,6 @@ resource "aws_security_group" "eks_cluster_sg" {
   description = "Security group for EKS Cluster"
   vpc_id      = data.aws_vpc.vpc.id
 
-  ingress {//아직 어떤 포트에 줘야할지모름
-    description     = "아직 어떤 포트에 줘야할지 모름 "
-    from_port       = 443
-    to_port         = 443
-    protocol        = "tcp"
-    security_groups = [aws_security_group.eks_node_sg.id]
-  }
 
   egress {
     description = "Allow all outbound traffic"
@@ -66,6 +51,7 @@ resource "aws_security_group" "eks_cluster_sg" {
   tags = {
     Name = var.eks-cluster-sg-name
   }
+  depends_on = [aws_security_group.internal_alb_sg]
 }
 
 # =================================================================
@@ -76,14 +62,6 @@ resource "aws_security_group" "eks_node_sg" {
   description = "Security group for EKS Node Group"
   vpc_id      = data.aws_vpc.vpc.id
 
-  ingress { // 아직 어떤 포트에 줘야할지 모름
-    description     = "Allow cluster to connect to nodes (kubelet)"
-    from_port       = 1025
-    to_port         = 65535
-    protocol        = "tcp"
-    security_groups = [aws_security_group.eks_cluster_sg.id]
-  }
-  
 
   ingress {
     description = "Allow all traffic between nodes"
@@ -104,8 +82,32 @@ resource "aws_security_group" "eks_node_sg" {
   tags = {
     Name = var.eks-node-sg-name
   }
+
+  depends_on = [aws_security_group.eks_cluster_sg]
+}
+# 규칙 1: Node -> Cluster 통신
+resource "aws_security_group_rule" "node_to_cluster_https" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_node_sg.id
+  security_group_id        = aws_security_group.eks_cluster_sg.id
+
+  depends_on = [aws_security_group.eks_node_sg]
 }
 
+# 규칙 2: Cluster -> Node 통신
+resource "aws_security_group_rule" "cluster_to_node_all" {
+  type                     = "ingress"
+  from_port                = 1025
+  to_port                  = 65535
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_cluster_sg.id
+  security_group_id        = aws_security_group.eks_node_sg.id
+
+  depends_on = [aws_security_group.eks_node_sg]
+}
 
 # =================================================================
 # Redis Security Group
@@ -134,6 +136,7 @@ resource "aws_security_group" "redis_sg" {
   tags = {
     Name = var.redis-ec2-sg-name
   }
+  depends_on = [aws_security_group.eks_node_sg]
 }
 
 # =================================================================
@@ -163,6 +166,8 @@ resource "aws_security_group" "postgre_db_sg" {
   tags = {
     Name = var.postgre-db-sg-name
   }
+
+  depends_on = [aws_security_group.eks_node_sg]
 }
 
 # =================================================================
@@ -192,4 +197,6 @@ resource "aws_security_group" "document_db_sg" {
   tags = {
     Name = var.document-db-sg-name
   }
+
+  depends_on = [aws_security_group.eks_node_sg]
 }
