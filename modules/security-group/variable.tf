@@ -1,4 +1,5 @@
 variable "vpc-name" {}
+variable "ssm-ec2-sg-name" {}
 variable "alb-sg-name" {}
 variable "redis-ec2-sg-name" {}
 variable "eks-cluster-sg-name" {}

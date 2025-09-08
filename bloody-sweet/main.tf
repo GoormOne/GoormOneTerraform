@@ -32,6 +32,7 @@ module "security-group" {
   source = "../modules/security-group"
 
   vpc-name    = var.VPC-NAME
+  ssm-ec2-sg-name = var.SSM-EC2-SG-NAME
   alb-sg-name = var.ALB-SG-NAME
   redis-ec2-sg-name = var.REDIS-EC2-SG-NAME
   eks-cluster-sg-name = var.EKS-CLUSTER-SG-NAME
@@ -68,6 +69,23 @@ module "documentdb" {
 
   depends_on = [module.security-group]
 }
+
+module "ec2_ssm" {
+  source = "../modules/aws-ec2"
+
+  ssm-ec2-name = var.SSM-EC2-NAEM
+  vpc-name    = var.VPC-NAME
+  public-subnet-name1=var.PUBLIC-SUBNET1
+  vpc-id = module.vpc.vpc_id
+  ssm-ec2-sg-name = var.SSM-EC2-SG-NAME
+
+
+
+  depends_on = [module.security-group]
+}
+
+
+
 #
 # module "alb" {
 #   source = "../modules/alb-tg"

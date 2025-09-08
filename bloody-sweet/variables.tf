@@ -27,6 +27,7 @@ variable "PRIVATE-RT-NAME4" {}
 
 
 # SECURITY GROUP
+variable "SSM-EC2-SG-NAME" {}
 variable "ALB-SG-NAME" {}
 
 variable "REDIS-EC2-SG-NAME" {}
@@ -46,7 +47,8 @@ variable "DOCUMENT-DB-PWD" {}
 variable "DOCUMENT-DB-NAME" {}
 
 
-
+#EC2
+variable "SSM-EC2-NAEM" {}
 
 
 # ALB

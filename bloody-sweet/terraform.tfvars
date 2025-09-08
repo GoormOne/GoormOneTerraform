@@ -26,6 +26,7 @@ PRIVATE-RT-NAME3 = "Groom-Private-Route-table3"
 PRIVATE-RT-NAME4 = "Groom-Private-Route-table4"
 
 # SECURITY GROUP
+SSM-EC2-SG-NAME = "ssm-ec2-sg"
 ALB-SG-NAME = "alb-sg"
 REDIS-EC2-SG-NAME = "redis-ec2-sg"//나중에 생기면 적용
 EKS-CLUSTER-SG-NAME = "eks-cluster-sg"//나중에 eks 생기면 적용
@@ -46,7 +47,8 @@ DOCUMENT-DB-PWD      = "!4786buch"
 DOCUMENT-DB-NAME      = "GroomDocument DB"
 
 
-
+#EC2
+SSM-EC2-NAEM = "ssm-ec2-name"
 
 
 

@@ -1,3 +1,26 @@
+# =================================================================
+# SSM EC2용 보안 그룹 (신규 추가)
+# =================================================================
+resource "aws_security_group" "ssm_ec2_sg" {
+  name        = var.ssm-ec2-sg-name # variables.tf에 이 변수 추가 필요
+  description = "Security group for SSM EC2 management instance"
+  vpc_id      = data.aws_vpc.vpc.id
+
+  # SSM Agent는 아웃바운드 통신만 필요하므로 인바운드 규칙은 필요 없음
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.ssm-ec2-sg-name
+  }
+}
+
+
 
 # =================================================================
 # Internal ALB Security Group
@@ -14,6 +37,13 @@ resource "aws_security_group" "internal_alb_sg" {
     protocol        = "tcp"
     cidr_blocks = [data.aws_vpc.vpc.cidr_block]
   }
+  ingress {
+    description     = "Allow ALL traffic from SSM EC2" # 설명도 명확하게 수정
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1" # "-1"은 모든 프로토콜을 의미
+    security_groups = [aws_security_group.ssm_ec2_sg.id]
+  }
 
   egress {
     description = "Allow all outbound traffic"
@@ -26,6 +56,7 @@ resource "aws_security_group" "internal_alb_sg" {
   tags = {
     Name = var.alb-sg-name
   }
+  depends_on = [aws_security_group.ssm_ec2_sg]
 }
 
 
@@ -38,7 +69,13 @@ resource "aws_security_group" "eks_cluster_sg" {
   description = "Security group for EKS Cluster"
   vpc_id      = data.aws_vpc.vpc.id
 
-
+  ingress {
+    description     = "Allow ALL traffic from SSM EC2" # 설명도 명확하게 수정
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1" # "-1"은 모든 프로토콜을 의미
+    security_groups = [aws_security_group.ssm_ec2_sg.id]
+  }
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
@@ -70,6 +107,14 @@ resource "aws_security_group" "eks_node_sg" {
     protocol    = "-1"
     self        = true
   }
+  ingress {
+    description     = "Allow ALL traffic from SSM EC2" # 설명도 명확하게 수정
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1" # "-1"은 모든 프로토콜을 의미
+    security_groups = [aws_security_group.ssm_ec2_sg.id]
+  }
+
 
   egress {
     description = "Allow all outbound traffic"
@@ -124,6 +169,13 @@ resource "aws_security_group" "redis_sg" {
     protocol        = "tcp"
     security_groups = [aws_security_group.eks_node_sg.id]
   }
+  ingress {
+    description     = "Allow ALL traffic from SSM EC2" # 설명도 명확하게 수정
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1" # "-1"은 모든 프로토콜을 의미
+    security_groups = [aws_security_group.ssm_ec2_sg.id]
+  }
 
   egress {
     description = "Allow all outbound traffic"
@@ -153,6 +205,13 @@ resource "aws_security_group" "postgre_db_sg" {
     to_port         = 5432
     protocol        = "tcp"
     security_groups = [aws_security_group.eks_node_sg.id]
+  }
+  ingress {
+    description     = "Allow ALL traffic from SSM EC2" # 설명도 명확하게 수정
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1" # "-1"은 모든 프로토콜을 의미
+    security_groups = [aws_security_group.ssm_ec2_sg.id]
   }
 
   egress {
@@ -184,6 +243,13 @@ resource "aws_security_group" "document_db_sg" {
     to_port         = 27017
     protocol        = "tcp"
     security_groups = [aws_security_group.eks_node_sg.id]
+  }
+  ingress {
+    description     = "Allow ALL traffic from SSM EC2" # 설명도 명확하게 수정
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1" # "-1"은 모든 프로토콜을 의미
+    security_groups = [aws_security_group.ssm_ec2_sg.id]
   }
 
   egress {
