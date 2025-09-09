@@ -26,6 +26,7 @@ PRIVATE-RT-NAME3 = "Groom-Private-Route-table3"
 PRIVATE-RT-NAME4 = "Groom-Private-Route-table4"
 
 # SECURITY GROUP
+VPC-LINK-SG-NAME = "vpc-link-sg"
 SSM-EC2-SG-NAME = "ssm-ec2-sg"
 ALB-SG-NAME = "alb-sg"
 REDIS-EC2-SG-NAME = "redis-ec2-sg"//나중에 생기면 적용
@@ -54,10 +55,13 @@ SSM-EC2-NAEM = "ssm-ec2-name"
 
 
 # ALB
-TG-NAME  = "Web-TG"
-WAS-TG-NAME  = "WAS-TG"
-WEB-ALB-NAME = "Web-elb"
-WAS-ALB-NAME ="was-elb"
+ALB-NAME ="GroomALb"
+ALB-TG-NAME = "GroomAlb-target-group"
+ALB-LISTENER-NAME = "GroomALB-listener"
+
+#VPC_LINK
+VPC-LINK-NAME = "Groomvpc_link"
+
 
 # IAM
 IAM-ROLE              = "cli-iam-role-for-ec2-SSM_"

@@ -1,16 +1,11 @@
-data "aws_subnet" "public-subnet1" {
+data "aws_security_group" "alb-sg" {
   filter {
-    name   = "tag:Name"
-    values = [var.public-subnet-name1]
+    name = "tag:Name"
+    values = [var.alb-sg-name]
   }
 }
 
-data "aws_subnet" "public-subnet2" {
-  filter {
-    name   = "tag:Name"
-    values = [var.public-subnet-name2]
-  }
-}
+
 data "aws_subnet" "private-subnet1" {
   filter {
     name   = "tag:Name"
@@ -24,19 +19,6 @@ data "aws_subnet" "private-subnet2" {
   }
 }
 
-data "aws_security_group" "web-alb-sg" {
-  filter {
-    name   = "tag:Name"
-    values = [var.web-alb-sg-name]
-  }
-}
-
-data "aws_security_group" "was-alb-sg" {
-  filter {
-    name   = "tag:Name"
-    values = [var.was-alb-sg-name]
-  }
-}
 
 
 data "aws_vpc" "vpc" {

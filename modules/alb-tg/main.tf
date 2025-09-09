@@ -1,149 +1,77 @@
 # Creating ALB for Web Tier
-resource "aws_lb" "web-elb" {
-  name = var.web-alb-name
-  internal           = false
-  load_balancer_type = "application"
-  subnets            = [data.aws_subnet.public-subnet1.id, data.aws_subnet.public-subnet2.id]
-  security_groups    = [data.aws_security_group.web-alb-sg.id]
-  ip_address_type    = "ipv4"
-  enable_deletion_protection = false
-  tags = {
-    Name = var.web-alb-name
-  }
-}
-output "web_alb_dns" {
-  value = aws_lb.web-elb.dns_name
-}
-
-
-# Creating Target Group for Web-Tier 
-resource "aws_lb_target_group" "web-tg" {
-  
-  name = var.tg-name
-  health_check {
-    enabled = true
-    interval            = 10
-    path                = "/"
-    protocol            = "HTTP"
-    timeout             = 5
-    healthy_threshold   = 5
-    unhealthy_threshold = 2
-  }##상태 검사 
-  target_type = "instance"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = data.aws_vpc.vpc.id
-
-  tags = {
-    Name = var.tg-name
-  }
-
-  lifecycle {
-    prevent_destroy = false
-  } 
-  depends_on = [ aws_lb.web-elb ]
-}
-
-#---------------------------------------
-# Creating ALB listener with port 80 and attaching it to Web-Tier Target Group
-resource "aws_lb_listener" "web-alb-listener" {
-  load_balancer_arn = aws_lb.web-elb.arn
-  
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.web-tg.arn
-  }
-
-  depends_on = [ aws_lb.web-elb ]
-}
-
-resource "aws_lb_listener" "web-alb-listener_https" {
-  load_balancer_arn = aws_lb.web-elb.arn
-  
-  port              = 443
-  protocol          = "HTTPS"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.web-tg.arn
-  } 
-   certificate_arn = "arn:aws:acm:us-west-2:891377163278:certificate/9a65a828-d4ec-4f79-9e15-e464d5202e47"  # Replace with your actual certificate ARN
-
-  depends_on = [ aws_lb.web-elb ]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Creating ALB for Web Tier
-resource "aws_lb" "was-elb" {
-  name = var.was-alb-name
+resource "aws_lb" "alb" {
+  name               = var.alb-name
   internal           = true
   load_balancer_type = "application"
-  subnets            = [data.aws_subnet.private-subnet1.id, data.aws_subnet.private-subnet2.id]
-  security_groups    = [data.aws_security_group.was-alb-sg.id]
-  ip_address_type    = "ipv4"
-  enable_deletion_protection = false
+
+  # 하드코딩된 ID 대신, 데이터 소스나 다른 리소스의 속성을 참조합니다.
+  security_groups = [data.aws_security_group.alb-sg.id]
+  subnets         = [data.aws_subnet.private-subnet1.id,data.aws_subnet.private-subnet2.id]
+
+  # 추가 속성
+  enable_cross_zone_load_balancing = true
+  idle_timeout                     = 60
+  desync_mitigation_mode           = "defensive"
+  xff_header_processing_mode       = "append"
+
   tags = {
-    Name = var.was-alb-name
+    Name = var.alb-name
   }
 }
 
-output "was_alb_dns" {
-  value = aws_lb.was-elb.dns_name
-}
 
 
 # Creating Target Group for Web-Tier 
-resource "aws_lb_target_group" "was-tg" {
-  name = var.was-tg-name
+resource "aws_lb_target_group" "alb-tg" {
+  name        = "test"
+  port        = 8080
+  protocol    = "HTTP"
+  target_type = "instance"
+
+  # 하드코딩된 ID 대신, 데이터 소스의 속성을 참조합니다.
+  vpc_id      = data.aws_vpc.vpc.id
+
+  deregistration_delay = 300
+  load_balancing_cross_zone_enabled = "use_load_balancer_configuration"
+  load_balancing_algorithm_type = "round_robin"
+
   health_check {
-    enabled = true
-    interval            = 10
-    path                = "/"
+    enabled             = true
+    path                = "/test"
+    port                = "traffic-port"
     protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
     timeout             = 5
     healthy_threshold   = 5
     unhealthy_threshold = 2
-  }##상태 검사 
-  target_type = "instance"
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = data.aws_vpc.vpc.id
-
-  tags = {
-    Name = var.was-tg-name
   }
 
-  lifecycle {
-    prevent_destroy = false
-  } 
-  depends_on = [ aws_lb.was-elb ]
+  tags = {
+    Name = var.alb-tg-name
+  }
+  depends_on = [ aws_lb.alb ]
 }
 
 
 # Creating ALB listener with port 80 and attaching it to Web-Tier Target Group
 resource "aws_lb_listener" "was-alb-listener" {
-  load_balancer_arn = aws_lb.was-elb.arn
-  port              = 8080
-  protocol          = "HTTP"
+  # 하드코딩된 ARN 대신, 위에서 정의한 aws_lb 리소스의 arn 속성을 참조합니다.
+  load_balancer_arn = aws_lb.alb.arn
+
+  port     = 80
+  protocol = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.was-tg.arn
+    type = "forward"
+
+    # 하드코딩된 ARN 대신, 위에서 정의한 aws_lb_target_group 리소스의 arn 속성을 참조합니다.
+    target_group_arn = aws_lb_target_group.alb-tg.arn
   }
 
-  depends_on = [ aws_lb.was-elb ]
+  tags = {
+    Name = var.alb-listener-name
+  }
+
+  depends_on = [ aws_lb_target_group.alb-tg]
 }

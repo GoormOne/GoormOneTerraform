@@ -31,6 +31,7 @@ module "vpc" {
 module "security-group" {
   source = "../modules/security-group"
 
+  vpc-link-sg-name = var.VPC-LINK-SG-NAME
   vpc-name    = var.VPC-NAME
   ssm-ec2-sg-name = var.SSM-EC2-SG-NAME
   alb-sg-name = var.ALB-SG-NAME
@@ -87,24 +88,33 @@ module "ec2_ssm" {
 
 
 #
-# module "alb" {
-#   source = "../modules/alb-tg"
-#
-#   public-subnet-name1 = var.PUBLIC-SUBNET1
-#   public-subnet-name2 = var.PUBLIC-SUBNET2
-#   private-subnet-name1 = var.PRIVATE-SUBNET1
-#   private-subnet-name2 = var.PRIVATE-SUBNET2
-#   web-alb-sg-name     = var.WEB-ALB-SG-NAME
-#   was-alb-sg-name     = var.WAS-ALB-SG-NAME
-#   web-alb-name            = var.WEB-ALB-NAME
-#   was-alb-name            = var.WAS-ALB-NAME
-#   was-tg-name         = var.WAS-TG-NAME
-#   tg-name             = var.TG-NAME
-#   vpc-name            = var.VPC-NAME
-#   vpc-id              = module.vpc.vpc_id
-#
-#   depends_on = [module.rds]//나중에 module.rds 로 바꾸기
-# }
+module "alb" {
+  source = "../modules/alb-tg"
+
+  alb-name = var.ALB-NAME
+  alb-sg-name = var.ALB-SG-NAME
+  private-subnet-name1 = var.PRIVATE-SUBNET1
+  private-subnet-name2 = var.PRIVATE-SUBNET2
+  vpc-name            = var.VPC-NAME
+  alb-tg-name = var.ALB-TG-NAME
+  alb-listener-name = var.ALB-LISTENER-NAME
+
+
+  depends_on = [module.rds]//나중에 module.rds 로 바꾸기
+}
+
+module "api-gate-way" {
+  source = "../modules/aws-api-gateway"
+  vpc-link-name = var.VPC-LINK-NAME
+  alb-name = var.ALB-NAME
+  private-subnet-name1 = var.PRIVATE-SUBNET1
+  private-subnet-name2 = var.PRIVATE-SUBNET2
+  vpc-link-sg-name = var.VPC-LINK-SG-NAME
+
+  depends_on = [module.alb]
+}
+
+
 #
 # module "iam" {
 #   source = "../modules/aws-iam"

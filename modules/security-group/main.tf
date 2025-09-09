@@ -20,6 +20,26 @@ resource "aws_security_group" "ssm_ec2_sg" {
   }
 }
 
+resource "aws_security_group" "vpc_link_sg" {
+  name        = var.vpc-link-sg-name
+  description = "Security group for the HTTP API VPC Link"
+  vpc_id      = data.aws_vpc.vpc.id # 기존 Target Group에서 사용한 VPC 데이터 소스 참조
+
+  # 이 보안 그룹에서 나가는(Egress) 트래픽은 모두 허용합니다.
+  # ALB로 요청을 보내야 하기 때문입니다.
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.vpc-link-sg-name
+  }
+  depends_on = [aws_security_group.ssm_ec2_sg]
+}
+
 
 
 # =================================================================
@@ -56,9 +76,23 @@ resource "aws_security_group" "internal_alb_sg" {
   tags = {
     Name = var.alb-sg-name
   }
-  depends_on = [aws_security_group.ssm_ec2_sg]
+  depends_on = [aws_security_group.vpc_link_sg]
 }
 
+resource "aws_security_group_rule" "allow_vpclink_to_alb" {
+  type                     = "ingress"
+  from_port                = 80 # ALB 리스너 포트 (aws_lb_listener.was-alb-listener.port 참조)
+  to_port                  = 80 # ALB 리스너 포트
+  protocol                 = "tcp"
+
+  # 소스(Source)를 위에서 만든 VPC Link 보안 그룹으로 지정합니다.
+  source_security_group_id = aws_security_group.vpc_link_sg.id
+
+  # 규칙을 추가할 대상은 기존 ALB의 보안 그룹입니다.
+  security_group_id        = aws_security_group.internal_alb_sg.id
+
+  depends_on = [aws_security_group.internal_alb_sg]
+}
 
 
 # =================================================================

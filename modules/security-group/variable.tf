@@ -1,3 +1,4 @@
+variable "vpc-link-sg-name" {}
 variable "vpc-name" {}
 variable "ssm-ec2-sg-name" {}
 variable "alb-sg-name" {}

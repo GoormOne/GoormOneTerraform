@@ -1,12 +1,8 @@
-variable "public-subnet-name1" {}
-variable "public-subnet-name2" {}
+variable "alb-name" {}
+variable "alb-sg-name" {}
 variable "private-subnet-name1" {}
 variable "private-subnet-name2" {}
-variable "web-alb-sg-name" {}
-variable "was-alb-sg-name" {}
-variable "web-alb-name" {}
-variable "was-alb-name" {}
-variable "tg-name" {}
-variable "was-tg-name" {}
 variable "vpc-name" {}
-variable "vpc-id" {}
+variable "alb-tg-name" {}
+variable "alb-listener-name" {}
+

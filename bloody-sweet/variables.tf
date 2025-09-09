@@ -27,9 +27,9 @@ variable "PRIVATE-RT-NAME4" {}
 
 
 # SECURITY GROUP
+variable "VPC-LINK-SG-NAME" {}
 variable "SSM-EC2-SG-NAME" {}
 variable "ALB-SG-NAME" {}
-
 variable "REDIS-EC2-SG-NAME" {}
 variable "EKS-CLUSTER-SG-NAME" {}
 variable "EKS-NODE-SG-NAME" {}
@@ -52,10 +52,14 @@ variable "SSM-EC2-NAEM" {}
 
 
 # ALB
-variable "TG-NAME" {}
-variable "WAS-TG-NAME" {}
-variable "WEB-ALB-NAME" {}
-variable "WAS-ALB-NAME" {}
+variable "ALB-NAME" {}
+variable "ALB-TG-NAME" {}
+variable "ALB-LISTENER-NAME" {}
+
+
+#VPC_LINK
+variable "VPC-LINK-NAME" {}
+
 # IAM
 variable "IAM-ROLE" {}
 variable "IAM-POLICY" {}
