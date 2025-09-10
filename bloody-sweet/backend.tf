@@ -5,8 +5,17 @@ terraform {
       source  = "hashicorp/aws"
 
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.20"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.10"
+    }
   }
 }
+
 
 
 provider "aws" {

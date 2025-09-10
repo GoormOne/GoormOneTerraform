@@ -51,6 +51,9 @@ DOCUMENT-DB-NAME      = "GroomDocument DB"
 #EC2-SSM
 SSM-EC2-NAEM = "ssm-ec2-name"
 
+#EKS
+EKS-CLUSTER-NAME = "Groom-EKS-Cluster"
+
 
 
 

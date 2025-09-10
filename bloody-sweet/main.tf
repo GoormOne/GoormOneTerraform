@@ -124,8 +124,16 @@ module "ec2_redis" {
 
 
 
-  depends_on = [module.security-group]
+  depends_on = [module.rds]
 }
+module "aws-eks" {
+  source = "../modules/aws-eks"
+  eks-cluster-name = var.EKS-CLUSTER-NAME
+  private-subnet1-id = module.vpc.private_subnet1_id
+  private-subnet2-id = module.vpc.private_subnet2_id
+  vpc-id = module.vpc.vpc_id
+}
+
 
 
 #
@@ -176,3 +184,5 @@ module "ec2_redis" {
 
 #   depends_on = [ module.autoscaling ]
 # }
+
+

@@ -63,6 +63,9 @@ variable "VPC-LINK-NAME" {}
 #EC2-REDIS
 variable "REDIS-EC2-NAEM" {}
 
+#EKS-CLUSTER
+variable "EKS-CLUSTER-NAME" {}
+
 # IAM
 variable "IAM-ROLE" {}
 variable "IAM-POLICY" {}
