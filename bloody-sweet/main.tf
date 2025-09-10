@@ -32,7 +32,8 @@ module "security-group" {
   source = "../modules/security-group"
 
   vpc-link-sg-name = var.VPC-LINK-SG-NAME
-  vpc-name    = var.VPC-NAME
+  vpc-id = module.vpc.vpc_id
+  vpc-cidr = module.vpc.vpc_cidr_block
   ssm-ec2-sg-name = var.SSM-EC2-SG-NAME
   alb-sg-name = var.ALB-SG-NAME
   redis-ec2-sg-name = var.REDIS-EC2-SG-NAME
@@ -48,9 +49,10 @@ module "security-group" {
 module "rds" {
   source = "../modules/aws-rds"
 
-  postgre-db-sg-name           = var.POSTGRE-DB-SG-NAME
-  private-subnet-name3 = var.PRIVATE-SUBNET3
-  private-subnet-name4 = var.PRIVATE-SUBNET4
+  postgre-db-subnet-group-name = var.POSTGRE-DB-SG-NAME
+  postgre-db-sg-id = module.security-group.postgre_db_sg_id
+  private-subnet3-id = module.vpc.private_subnet3_id
+  private-subnet4-id = module.vpc.private_subnet4_id
   postgre-db-snapshot-identifier = var.POSTGRE-DB-SANPSHOT-IDENTIFIER
   postgre-db-name = var.DOCUMENT-DB-NAME
 
@@ -58,27 +60,25 @@ module "rds" {
   depends_on = [module.security-group]
 }
 
-module "documentdb" {
-  source = "../modules/aws-documentdb"
-
-  private-subnet-name3 = var.PRIVATE-SUBNET3
-  private-subnet-name4 = var.PRIVATE-SUBNET4
-  document-db-sg-name  = var.DOCUMENT-DB-SG-NAME
-  document-db-username = var.DOCUMENT-DB-USERNAME
-  document-db-pwd      = var.DOCUMENT-DB-PWD
-  document-db-name     = var.DOCUMENT-DB-NAME
-
-  depends_on = [module.security-group]
-}
+# module "documentdb" {
+#   source = "../modules/aws-documentdb"
+#
+#   private-subnet-name3 = var.PRIVATE-SUBNET3
+#   private-subnet-name4 = var.PRIVATE-SUBNET4
+#   document-db-sg-name  = var.DOCUMENT-DB-SG-NAME
+#   document-db-username = var.DOCUMENT-DB-USERNAME
+#   document-db-pwd      = var.DOCUMENT-DB-PWD
+#   document-db-name     = var.DOCUMENT-DB-NAME
+#
+#   depends_on = [module.security-group]
+# }
 
 module "ec2_ssm" {
   source = "../modules/aws-ec2"
 
   ssm-ec2-name = var.SSM-EC2-NAEM
-  vpc-name    = var.VPC-NAME
-  public-subnet-name1=var.PUBLIC-SUBNET1
-  vpc-id = module.vpc.vpc_id
-  ssm-ec2-sg-name = var.SSM-EC2-SG-NAME
+  public-subnet1-id = module.vpc.public_subnet1_id
+  ssm-ec2-sg-id = module.security-group.ssm_ec2_sg_id
 
 
 
@@ -92,10 +92,10 @@ module "alb" {
   source = "../modules/alb-tg"
 
   alb-name = var.ALB-NAME
-  alb-sg-name = var.ALB-SG-NAME
-  private-subnet-name1 = var.PRIVATE-SUBNET1
-  private-subnet-name2 = var.PRIVATE-SUBNET2
-  vpc-name            = var.VPC-NAME
+  alb-sg-id = module.security-group.alb_sg_id
+  private-subnet1-id = module.vpc.private_subnet1_id
+  private-subnet2-id = module.vpc.private_subnet2_id
+  vpc-id = module.vpc.vpc_id
   alb-tg-name = var.ALB-TG-NAME
   alb-listener-name = var.ALB-LISTENER-NAME
 
@@ -107,11 +107,24 @@ module "api-gate-way" {
   source = "../modules/aws-api-gateway"
   vpc-link-name = var.VPC-LINK-NAME
   alb-name = var.ALB-NAME
-  private-subnet-name1 = var.PRIVATE-SUBNET1
-  private-subnet-name2 = var.PRIVATE-SUBNET2
-  vpc-link-sg-name = var.VPC-LINK-SG-NAME
+  private-subnet1-id = module.vpc.private_subnet1_id
+  private-subnet2-id = module.vpc.private_subnet2_id
+  vpc-link-sg-id = module.security-group.vpc_link_sg_id
 
   depends_on = [module.alb]
+}
+
+module "ec2_redis" {
+  source = "../modules/aws-redis-ec2"
+
+
+  private-subnet1-id = module.vpc.private_subnet1_id
+  redis-ec2-sg-id = module.security-group.redis_sg_id
+  redis-ec2-name = var.REDIS-EC2-NAEM
+
+
+
+  depends_on = [module.security-group]
 }
 
 

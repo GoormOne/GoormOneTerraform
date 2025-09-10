@@ -48,7 +48,7 @@ DOCUMENT-DB-PWD      = "!4786buch"
 DOCUMENT-DB-NAME      = "GroomDocument DB"
 
 
-#EC2
+#EC2-SSM
 SSM-EC2-NAEM = "ssm-ec2-name"
 
 
@@ -61,6 +61,10 @@ ALB-LISTENER-NAME = "GroomALB-listener"
 
 #VPC_LINK
 VPC-LINK-NAME = "Groomvpc_link"
+
+#EC2-REDIS
+REDIS-EC2-NAEM = "Groom-redis-ec2"
+
 
 
 # IAM

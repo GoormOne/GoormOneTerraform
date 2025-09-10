@@ -4,7 +4,7 @@
 resource "aws_security_group" "ssm_ec2_sg" {
   name        = var.ssm-ec2-sg-name # variables.tf에 이 변수 추가 필요
   description = "Security group for SSM EC2 management instance"
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = var.vpc-id
 
   # SSM Agent는 아웃바운드 통신만 필요하므로 인바운드 규칙은 필요 없음
   egress {
@@ -23,7 +23,7 @@ resource "aws_security_group" "ssm_ec2_sg" {
 resource "aws_security_group" "vpc_link_sg" {
   name        = var.vpc-link-sg-name
   description = "Security group for the HTTP API VPC Link"
-  vpc_id      = data.aws_vpc.vpc.id # 기존 Target Group에서 사용한 VPC 데이터 소스 참조
+  vpc_id      = var.vpc-id# 기존 Target Group에서 사용한 VPC 데이터 소스 참조
 
   # 이 보안 그룹에서 나가는(Egress) 트래픽은 모두 허용합니다.
   # ALB로 요청을 보내야 하기 때문입니다.
@@ -48,14 +48,14 @@ resource "aws_security_group" "vpc_link_sg" {
 resource "aws_security_group" "internal_alb_sg" {
   name        = var.alb-sg-name
   description = "Security group for Internal ALB"
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = var.vpc-id
 
   ingress {
     description     = "Allow HTTP from VPC Endpoint"
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    cidr_blocks = [data.aws_vpc.vpc.cidr_block]
+    cidr_blocks = [var.vpc-cidr]
   }
   ingress {
     description     = "Allow ALL traffic from SSM EC2" # 설명도 명확하게 수정
@@ -101,7 +101,7 @@ resource "aws_security_group_rule" "allow_vpclink_to_alb" {
 resource "aws_security_group" "eks_cluster_sg" {
   name        = var.eks-cluster-sg-name
   description = "Security group for EKS Cluster"
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = var.vpc-id
 
   ingress {
     description     = "Allow ALL traffic from SSM EC2" # 설명도 명확하게 수정
@@ -131,7 +131,7 @@ resource "aws_security_group" "eks_cluster_sg" {
 resource "aws_security_group" "eks_node_sg" {
   name        = var.eks-node-sg-name
   description = "Security group for EKS Node Group"
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = var.vpc-id
 
 
   ingress {
@@ -194,7 +194,7 @@ resource "aws_security_group_rule" "cluster_to_node_all" {
 resource "aws_security_group" "redis_sg" {
   name        = var.redis-ec2-sg-name
   description = "Security group for Redis EC2 instance"
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = var.vpc-id
 
   ingress {
     description     = "Allow Redis access from EKS Node Group"
@@ -231,7 +231,7 @@ resource "aws_security_group" "redis_sg" {
 resource "aws_security_group" "postgre_db_sg" {
   name        = var.postgre-db-sg-name
   description = "Security group for PostgreSQL DB"
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = var.vpc-id
 
   ingress {
     description     = "Allow PostgreSQL access from EKS Node Group"
@@ -269,7 +269,7 @@ resource "aws_security_group" "postgre_db_sg" {
 resource "aws_security_group" "document_db_sg" {
   name        = var.document-db-sg-name
   description = "Security group for DocumentDB"
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = var.vpc-id
 
   ingress {
     description     = "Allow DocumentDB access from EKS Node Group"
@@ -299,4 +299,30 @@ resource "aws_security_group" "document_db_sg" {
   }
 
   depends_on = [aws_security_group.eks_node_sg]
+}
+
+
+output "ssm_ec2_sg_id" {
+   value       = aws_security_group.ssm_ec2_sg.id
+}
+
+output "vpc_link_sg_id" {
+  value       = aws_security_group.vpc_link_sg.id
+}
+output "alb_sg_id" {
+  value       = aws_security_group.internal_alb_sg.id
+}
+
+output "eks_cluster_sg_id" {
+  value       = aws_security_group.eks_cluster_sg.id
+}
+
+output "eks_node_group_id" {
+  value       = aws_security_group.eks_node_sg.id
+}
+output "redis_sg_id" {
+  value       = aws_security_group.redis_sg.id
+}
+output "postgre_db_sg_id" {
+  value       = aws_security_group.postgre_db_sg.id
 }

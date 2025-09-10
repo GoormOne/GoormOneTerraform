@@ -2,8 +2,8 @@ resource "aws_apigatewayv2_vpc_link" "to_alb" {
   name = var.vpc-link-name
 
   # target_arns 대신 subnet_ids와 security_group_ids를 사용합니다.
-  subnet_ids         = [data.aws_subnet.private-subnet1.id,data.aws_subnet.private-subnet2.id]
-  security_group_ids = [data.aws_security_group.vpc-link-sg.id] # 필요시 특정 SG ID로 제한 가능
+  subnet_ids         = [var.private-subnet1-id,var.private-subnet2-id]
+  security_group_ids = [var.vpc-link-sg-id] # 필요시 특정 SG ID로 제한 가능
 
   tags = {
     Name = var.vpc-link-name
@@ -36,6 +36,8 @@ resource "aws_apigatewayv2_integration" "alb_integration" {
 
   # 실제 연결 대상인 ALB 리스너의 ARN을 지정합니다.
   integration_uri     = data.aws_alb_listener.alb_listener.arn
+
+  integration_method = "ANY"
 }
 
 # 모든 요청을 ALB 통합으로 보내는 라우트(Route) 생성

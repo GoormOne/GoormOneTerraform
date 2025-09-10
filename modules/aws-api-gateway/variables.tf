@@ -1,5 +1,5 @@
 variable "vpc-link-name" {}
 variable "alb-name" {}
-variable "private-subnet-name1" {}
-variable "private-subnet-name2" {}
-variable "vpc-link-sg-name" {}
+variable "private-subnet1-id" {}
+variable "private-subnet2-id" {}
+variable "vpc-link-sg-id" {}

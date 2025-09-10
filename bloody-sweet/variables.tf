@@ -47,7 +47,7 @@ variable "DOCUMENT-DB-PWD" {}
 variable "DOCUMENT-DB-NAME" {}
 
 
-#EC2
+#EC2-SSM
 variable "SSM-EC2-NAEM" {}
 
 
@@ -59,6 +59,9 @@ variable "ALB-LISTENER-NAME" {}
 
 #VPC_LINK
 variable "VPC-LINK-NAME" {}
+
+#EC2-REDIS
+variable "REDIS-EC2-NAEM" {}
 
 # IAM
 variable "IAM-ROLE" {}

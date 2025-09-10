@@ -1,5 +1,6 @@
 variable "vpc-link-sg-name" {}
-variable "vpc-name" {}
+variable "vpc-id" {}
+variable "vpc-cidr" {}
 variable "ssm-ec2-sg-name" {}
 variable "alb-sg-name" {}
 variable "redis-ec2-sg-name" {}

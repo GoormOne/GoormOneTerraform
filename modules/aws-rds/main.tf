@@ -1,7 +1,7 @@
 # 8 Creating DB subnet group for RDS Instances
 resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = var.postgre-db-sg-name
-  subnet_ids = [data.aws_subnet.private-subnet3.id, data.aws_subnet.private-subnet4.id]
+  name       = var.postgre-db-subnet-group-name
+  subnet_ids = [var.private-subnet3-id, var.private-subnet4-id]
 }
 
 
@@ -15,12 +15,12 @@ resource "aws_db_instance" "postgre_db_instance" {
   port                 = 5432
   # 네트워킹 설정
   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name
-  vpc_security_group_ids  = [data.aws_security_group.postgre-db-sg.id]
+  vpc_security_group_ids  = [var.postgre-db-sg-id]
 
 
   # 스냅샷이 이미 암호화된 경우 해당 설정을 상속받습니다.
   # 만약 스냅샷이 암호화되지 않았을 때 새로 암호화하려면 아래 두 줄을 활성화합니다.
-  # storage_encrypted = true
+   storage_encrypted = true
   # kms_key_id        = "alias/aws/rds" # AWS 관리형 기본 키
 
   # DB 인증 옵션: 암호 인증

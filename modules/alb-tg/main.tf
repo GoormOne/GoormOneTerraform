@@ -5,8 +5,8 @@ resource "aws_lb" "alb" {
   load_balancer_type = "application"
 
   # 하드코딩된 ID 대신, 데이터 소스나 다른 리소스의 속성을 참조합니다.
-  security_groups = [data.aws_security_group.alb-sg.id]
-  subnets         = [data.aws_subnet.private-subnet1.id,data.aws_subnet.private-subnet2.id]
+  security_groups = [var.alb-sg-id]
+  subnets         = [var.private-subnet1-id,var.private-subnet2-id]
 
   # 추가 속성
   enable_cross_zone_load_balancing = true
@@ -29,7 +29,7 @@ resource "aws_lb_target_group" "alb-tg" {
   target_type = "instance"
 
   # 하드코딩된 ID 대신, 데이터 소스의 속성을 참조합니다.
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = var.vpc-id
 
   deregistration_delay = 300
   load_balancing_cross_zone_enabled = "use_load_balancer_configuration"
