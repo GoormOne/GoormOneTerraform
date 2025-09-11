@@ -132,6 +132,8 @@ module "aws-eks" {
   private-subnet1-id = module.vpc.private_subnet1_id
   private-subnet2-id = module.vpc.private_subnet2_id
   vpc-id = module.vpc.vpc_id
+  redis-sg-id = module.security-group.redis_sg_id
+  postgre-db-sg-id = module.security-group.postgre_db_sg_id
 }
 
 

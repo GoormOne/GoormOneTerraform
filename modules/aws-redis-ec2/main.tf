@@ -10,11 +10,13 @@ resource "aws_instance" "main" {
   user_data = <<-EOT
               #!/bin/bash
 
-              sudo dnf install -y gcc make
-              sudo wget https://download.redis.io/releases/redis-7.2.4.tar.gz
-              sudo tar xzf redis-7.2.4.tar.gz
-              sudo make
-              sudo make install
+              sudo dnf install docker -y
+              sudo systemctl enable --now docker
+              docker run -d --name redis \
+              -p 6379:6379 \
+              redis:7 \
+              redis-server --protected-mode no
+
               EOT
 
   vpc_security_group_ids = [var.redis-ec2-sg-id]

@@ -293,7 +293,7 @@ resource "helm_release" "aws_load_balancer_controller" {
     }
 
 
-  depends_on = [kubernetes_service_account.aws_load_balancer_controller_sa]
+  depends_on = [kubernetes_service_account.aws_load_balancer_controller_sa,aws_eks_addon.coredns]
 }
 
 
@@ -372,7 +372,7 @@ resource "helm_release" "cluster_autoscaler" {
     }
 
 
-  depends_on = [kubernetes_service_account.cluster_autoscaler_sa]
+  depends_on = [kubernetes_service_account.cluster_autoscaler_sa,aws_eks_addon.coredns]
 }
 
 
@@ -385,4 +385,39 @@ resource "kubernetes_service_account" "all_pods_sa" {
       "eks.amazonaws.com/role-arn" = "arn:aws:iam::490913547024:role/all-service-pod-iam"
     }
   }
+}
+
+resource "aws_eks_pod_identity_association" "pod_identity_default" {
+  cluster_name    = aws_eks_cluster.eks_cluster.name
+    namespace       = "default"
+   service_account = "default"
+  role_arn        = "arn:aws:iam::490913547024:role/all-service-pod-iam"
+ }
+
+
+
+
+
+
+
+
+
+resource "aws_security_group_rule" "rds_ingress_from_eks" {
+  type              = "ingress"
+   from_port         = 5432
+  to_port           = 5432
+   protocol          = "tcp"
+   security_group_id = var.postgre-db-sg-id# 실제 RDS 보안 그룹 ID로 변경해야 합니다.
+   source_security_group_id = aws_eks_cluster.eks_cluster.vpc_config[0].cluster_security_group_id
+  depends_on = [aws_eks_cluster.eks_cluster]
+ }
+
+resource "aws_security_group_rule" "redis_ingress_from_eks" {
+  type              = "ingress"
+  from_port         = 6379
+  to_port           = 6379
+  protocol          = "tcp"
+  security_group_id = var.redis-sg-id # 실제 RDS 보안 그룹 ID로 변경해야 합니다.
+  source_security_group_id = aws_eks_cluster.eks_cluster.vpc_config[0].cluster_security_group_id
+  depends_on = [aws_eks_cluster.eks_cluster]
 }
