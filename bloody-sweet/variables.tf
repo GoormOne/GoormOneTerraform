@@ -35,6 +35,7 @@ variable "EKS-CLUSTER-SG-NAME" {}
 variable "EKS-NODE-SG-NAME" {}
 variable "POSTGRE-DB-SG-NAME" {}
 variable "DOCUMENT-DB-SG-NAME" {}
+variable "MSK-SG-NAME" {}
 
 # RDS
 variable "POSTGRE-DB-SANPSHOT-IDENTIFIER" {}
@@ -65,6 +66,10 @@ variable "REDIS-EC2-NAEM" {}
 
 #EKS-CLUSTER
 variable "EKS-CLUSTER-NAME" {}
+
+#MSK
+variable "MSK-CLUSTER-NAME" {}
+
 
 # IAM
 variable "IAM-ROLE" {}

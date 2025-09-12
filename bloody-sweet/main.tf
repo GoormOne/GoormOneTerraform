@@ -40,7 +40,7 @@ module "security-group" {
   eks-cluster-sg-name = var.EKS-CLUSTER-SG-NAME
   eks-node-sg-name = var.EKS-NODE-SG-NAME
   postgre-db-sg-name = var.POSTGRE-DB-SG-NAME
-  document-db-sg-name  = var.DOCUMENT-DB-SG-NAME
+  msk-sg-name  = var.MSK-SG-NAME
 
 
   depends_on = [module.vpc]
@@ -134,6 +134,15 @@ module "aws-eks" {
   vpc-id = module.vpc.vpc_id
   redis-sg-id = module.security-group.redis_sg_id
   postgre-db-sg-id = module.security-group.postgre_db_sg_id
+  msk-sg-id = module.security-group.msk_sg_id
+}
+
+module "aws-msk" {
+  source = "../modules/aws-msk"
+  msk-cluster-name = var.MSK-CLUSTER-NAME
+  private-subnet1-id = module.vpc.private_subnet1_id
+  private-subnet2-id = module.vpc.private_subnet2_id
+  msk-sg-id = module.security-group.msk_sg_id
 }
 
 

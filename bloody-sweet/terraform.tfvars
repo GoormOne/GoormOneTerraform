@@ -34,6 +34,7 @@ EKS-CLUSTER-SG-NAME = "eks-cluster-sg"//나중에 eks 생기면 적용
 EKS-NODE-SG-NAME = "eks-node-sg"
 POSTGRE-DB-SG-NAME  = "postgre-db-sg"
 DOCUMENT-DB-SG-NAME   = "document-db-sg"
+MSK-SG-NAME = "msk-sg"
 
 
 # POSTGRE
@@ -54,6 +55,8 @@ SSM-EC2-NAEM = "ssm-ec2-name"
 #EKS
 EKS-CLUSTER-NAME = "Groom-EKS-Cluster"
 
+#MSK
+MSK-CLUSTER-NAME = "Groom-MSK-Cluster"
 
 
 

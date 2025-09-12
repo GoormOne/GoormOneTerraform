@@ -421,3 +421,13 @@ resource "aws_security_group_rule" "redis_ingress_from_eks" {
   source_security_group_id = aws_eks_cluster.eks_cluster.vpc_config[0].cluster_security_group_id
   depends_on = [aws_eks_cluster.eks_cluster]
 }
+
+resource "aws_security_group_rule" "msk_ingress_from_eks" {
+  type              = "ingress"
+  from_port         = 9094
+  to_port           = 9094
+  protocol          = "tcp"
+  security_group_id = var.msk-sg-id # 실제 RDS 보안 그룹 ID로 변경해야 합니다.
+  source_security_group_id = aws_eks_cluster.eks_cluster.vpc_config[0].cluster_security_group_id
+  depends_on = [aws_eks_cluster.eks_cluster]
+}

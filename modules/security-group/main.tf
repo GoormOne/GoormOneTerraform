@@ -266,25 +266,12 @@ resource "aws_security_group" "postgre_db_sg" {
 # =================================================================
 # DocumentDB Security Group
 # =================================================================
-resource "aws_security_group" "document_db_sg" {
-  name        = var.document-db-sg-name
-  description = "Security group for DocumentDB"
+resource "aws_security_group" "msk_sg" {
+  name        = var.msk-sg-name
+  description = "Security group for msk"
   vpc_id      = var.vpc-id
 
-  ingress {
-    description     = "Allow DocumentDB access from EKS Node Group"
-    from_port       = 27017
-    to_port         = 27017
-    protocol        = "tcp"
-    security_groups = [aws_security_group.eks_node_sg.id]
-  }
-  ingress {
-    description     = "Allow ALL traffic from SSM EC2" # 설명도 명확하게 수정
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1" # "-1"은 모든 프로토콜을 의미
-    security_groups = [aws_security_group.ssm_ec2_sg.id]
-  }
+
 
   egress {
     description = "Allow all outbound traffic"
@@ -295,7 +282,7 @@ resource "aws_security_group" "document_db_sg" {
   }
 
   tags = {
-    Name = var.document-db-sg-name
+    Name = var.msk-sg-name
   }
 
   depends_on = [aws_security_group.eks_node_sg]
@@ -325,4 +312,7 @@ output "redis_sg_id" {
 }
 output "postgre_db_sg_id" {
   value       = aws_security_group.postgre_db_sg.id
+}
+output "msk_sg_id" {
+  value       = aws_security_group.msk_sg.id
 }
